@@ -10,7 +10,7 @@ const loaderFill = document.getElementById('loaderFill');
 let progress = 0;
 
 const loadInterval = setInterval(() => {
-  progress += Math.random() * 20; // Faster loading
+  progress += Math.random() * 50;
   if (progress >= 100) {
     progress = 100;
     clearInterval(loadInterval);
@@ -18,12 +18,21 @@ const loadInterval = setInterval(() => {
       loader.classList.add('hidden');
       document.body.style.overflow = '';
       initAnimations();
-    }, 200); // Reduced delay
+    }, 50);
   }
   loaderFill.style.width = progress + '%';
-}, 50); // Faster interval
+}, 15);
 
 document.body.style.overflow = 'hidden';
+
+// Fallback - auto hide after minimal time
+setTimeout(() => {
+  if (!loader.classList.contains('hidden')) {
+    loader.classList.add('hidden');
+    document.body.style.overflow = '';
+    initAnimations();
+  }
+}, 400);
 
 // ─── CUSTOM CURSOR ─────────────────────────────────────────
 const cursor = document.getElementById('cursor');
@@ -110,36 +119,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ─── REVEAL ANIMATIONS ─────────────────────────────────────
 function initAnimations() {
   const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        const delay = entry.target.dataset.delay || 0;
-        setTimeout(() => {
-          entry.target.classList.add('visible');
-        }, delay);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  
+  // Make ALL visible instantly - no delays between anything
+  revealElements.forEach(el => el.classList.add('visible'));
 
-  // Stagger siblings
-  const groups = {};
-  revealElements.forEach(el => {
-    const parent = el.parentElement;
-    if (!groups[parent]) groups[parent] = [];
-    groups[parent].push(el);
-  });
-  Object.values(groups).forEach(group => {
-    group.forEach((el, i) => {
-      el.dataset.delay = i * 100;
-    });
-  });
-
-  revealElements.forEach(el => observer.observe(el));
-
-  // Start counters
+  // Trigger counters and skill bars immediately too
   initCounters();
-  // Observe skill bars on scroll
   initSkillBars();
 }
 
@@ -203,7 +188,7 @@ function animateBarsInPanel(panel) {
   if (!panel) return;
   panel.querySelectorAll('.skill-fill').forEach(bar => {
     const width = bar.dataset.width;
-    setTimeout(() => { bar.style.width = width + '%'; }, 100);
+    setTimeout(() => { bar.style.width = width + '%'; }, 20);
   });
 }
 
@@ -379,12 +364,22 @@ document.head.appendChild(style);
 
 // ─── INIT on load ──────────────────────────────────────────
 window.addEventListener('load', () => {
-  // Fallback if loader already done
   setTimeout(() => {
     if (!loader.classList.contains('hidden')) {
       loader.classList.add('hidden');
       document.body.style.overflow = '';
       initAnimations();
     }
-  }, 3000);
+  }, 300);
+});
+
+// Also trigger animations immediately after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (!loader.classList.contains('hidden')) {
+      loader.classList.add('hidden');
+      document.body.style.overflow = '';
+      initAnimations();
+    }
+  }, 200);
 });

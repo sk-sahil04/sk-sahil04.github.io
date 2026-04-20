@@ -480,10 +480,17 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* =============================
    REVEAL ANIMATIONS
-============================= */
+============================ */
 .reveal-up, .reveal-left, .reveal-right {
   opacity: 0;
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.reveal-up { transform: translateY(40px); }
+.reveal-left { transform: translateX(-40px); }
+.reveal-right { transform: translateX(40px); }
+.reveal-up.visible, .reveal-left.visible, .reveal-right.visible {
+  opacity: 1;
+  transform: translate(0);
 }
 .reveal-up { transform: translateY(40px); }
 .reveal-left { transform: translateX(-40px); }
